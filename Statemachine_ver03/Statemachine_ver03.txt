@@ -1,0 +1,149 @@
+
+#define ACCIDENT_OCCURRED_BTN			6
+#define RED_ACC_LED 12
+
+#define ALTERNATIVE_PATH_AVAILABLE_BTN  3
+#define YELLOW_ALT_LED 	10
+
+#define GREEN_LED 	2
+#define RED_LED 	5
+#define ORANGE_LED  8
+#define BLUE_LED 	9
+
+/* 
+GREEN_LED = DRIVING_NORMAL
+RED_LED = DECELERATING
+ORANGE_LED = CHANGE_PATH
+BLUE_LED=CHANGE LANE_DIRECTION 
+*/
+
+
+boolean acc,alt = false;
+boolean accident_occurred,alternate_path_available=false;
+int delay_time=400;
+
+enum State
+{
+	DRIVING_NORMAL,
+	DECELERATING,
+	CHANGE_PATH,
+	CHANGE_LANE_DIRECTION,
+};
+
+State currentState = DRIVING_NORMAL;
+
+long readUltrasonicDistance(int triggerPin, int echoPin)
+{
+	pinMode(triggerPin, OUTPUT);  // Clear the trigger
+	digitalWrite(triggerPin, LOW);
+	delayMicroseconds(2);
+	// Sets the trigger pin to HIGH state for 10 microseconds
+	digitalWrite(triggerPin, HIGH);
+	delayMicroseconds(10);
+	digitalWrite(triggerPin, LOW);
+	pinMode(echoPin, INPUT);
+	// Reads the echo pin, and returns the sound wave travel time in microseconds
+	return pulseIn(echoPin, HIGH);
+}
+
+void setup()
+{
+  Serial.begin(9600);
+  //push button for accident occured
+  pinMode(12, OUTPUT);
+  pinMode(6, INPUT);
+  
+  pinMode(7,INPUT); //ultrasonic
+  pinMode(5,OUTPUT); //red led
+  pinMode(2,OUTPUT); //green led
+  pinMode(8,OUTPUT); //orange led
+  pinMode(9,OUTPUT); //blue led
+  
+  //push button for alternate path available
+  pinMode(10, OUTPUT);
+  pinMode(3, INPUT);
+}
+
+
+void loop()
+{
+  if(digitalRead(6) == HIGH)
+  {
+  
+    acc = !acc;
+    digitalWrite(12,acc);
+    Serial.println(acc);
+  }
+  accident_occurred=digitalRead(12);
+ 
+  
+  if(digitalRead(3) == HIGH)
+  {
+    
+    alt = !alt;
+    digitalWrite(10,alt);
+    Serial.println(alt);
+  }
+  alternate_path_available=digitalRead(10);
+  
+   switch(currentState)
+   {
+    case DRIVING_NORMAL:
+    if(accident_occurred &&(0.01723 * readUltrasonicDistance(7, 7) < 50))
+    {
+      digitalWrite(RED_LED,HIGH); //red decelerating
+      digitalWrite(GREEN_LED,LOW);
+       digitalWrite(ORANGE_LED,LOW);
+      digitalWrite(BLUE_LED,LOW);
+      currentState= DECELERATING;
+      delay(delay_time);  
+    }
+    else
+    {
+      digitalWrite(5,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
+      digitalWrite(2,HIGH);//green driving normal
+      delay(delay_time);
+      
+      currentState=DRIVING_NORMAL;
+    }
+    break;
+      
+    case DECELERATING:
+     if(alternate_path_available)
+     {
+      digitalWrite(5,LOW);
+      digitalWrite(2,LOW);
+      digitalWrite(9,LOW);
+      digitalWrite(8,HIGH);//orange changed path
+      currentState=CHANGE_PATH;
+      delay(delay_time);
+      }
+      else
+      {
+      digitalWrite(5,LOW);
+      digitalWrite(2,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,HIGH);
+      currentState=CHANGE_LANE_DIRECTION; //blue changed lane direction
+       delay(delay_time);
+       }
+      break;
+        
+      case CHANGE_LANE_DIRECTION:
+      case CHANGE_PATH:
+      digitalWrite(8,LOW);
+      digitalWrite(2,HIGH);
+      digitalWrite(9,LOW);
+      digitalWrite(5,LOW);
+      currentState=DRIVING_NORMAL;
+      delay(delay_time);
+      break;
+            
+    default:
+        break;
+
+  }
+   
+}
