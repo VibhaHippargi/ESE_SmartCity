@@ -14,10 +14,10 @@
 	{
 	public:
 		Vehicle();
-		void update_speed(State current);
-		void drive_normal(State current);
-		void update_direction(State current, char direction_avail);
-		void update_lane(State current, char lane_avail);
+		std::string update_speed(State current);
+		std::string drive_normal(State current);
+		std::string update_direction(State current, char direction_avail);
+		std::string update_lane(State current, char lane_avail);
 	};
 	class Accident_Scenario
 	{
