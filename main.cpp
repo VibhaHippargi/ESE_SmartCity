@@ -24,19 +24,19 @@ int main()
 	cout << "Press q to Quit, 't' for True and 'f' for False \n";
 	while (true)
 	{
-		cout << "Enter distance from next vehicle: ";
+		cout << "My distance from message transmitter: ";
 		if (!(cin >> distance_of_ahead_vehicle))
 		{
 			cout << "Integer numbers only allowed";
 			break;
 		}
-		cout << "Enter Accident possiblility: ";
+		cout << "Enter if Accident occured: ";
 		cin >> accident_occur;
 		if (accident_occur == 'q')
 		{
 			break;
 		}
-		cout << "Enter if path available: ";
+		cout << "Enter if Alternate path available: ";
 		cin >> path_available;
 		if (path_available == 'q')
 		{
@@ -68,7 +68,7 @@ int main()
 		}
 		if (_state == State::driving_normal)
 		{
-			v1.drive_normal(_state);
+			response = v1.drive_normal(_state);
 		}
 		cout << response;
 	}

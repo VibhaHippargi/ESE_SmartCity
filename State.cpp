@@ -37,7 +37,7 @@ string Vehicle::drive_normal(State current)
 {
 	if (current == State::driving_normal)
 	{
-		return ("Acknowledgement: Vehicle continue same path\n");
+		return ("Acknowledgement: Vehicle drive normal\n");
 		
 	}
 	else
@@ -79,9 +79,38 @@ string Vehicle::update_lane(State current, char lane_avail)
 	}
 
 	Accident_Scenario::Accident_Scenario(int dist, char accident, char path) {
-		this->distance_of_ahead_vehicle = dist;
-		this->accident_occured = accident;
-		this->alternate_path_available = path;
+		if(dist>0)
+		{
+			this->distance_of_ahead_vehicle = dist;
+		}
+		else
+		{
+			this->distance_of_ahead_vehicle = 0;
+		}
+		if ((accident == 't' || accident == 'f')&& accident != 'q')
+		{
+			this->accident_occured = accident;
+		}
+		else if (accident == 'q')
+		{
+			exit(EXIT_SUCCESS);
+		}
+		else
+		{
+			this->accident_occured = 'f';
+		}
+		if ((path == 't' || path == 'f') && path!='q')
+		{
+			this->alternate_path_available = path;
+		}
+		else if (path == 'q')
+		{
+			exit(EXIT_SUCCESS);
+		}
+		else
+		{
+			this->alternate_path_available = 'f';
+		}
 	}
 	 void Accident_Scenario::setdistance_of_ahead_vehicle(int dist)
 	{
