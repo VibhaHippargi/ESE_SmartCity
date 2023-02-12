@@ -34,7 +34,6 @@ static string function_response(int distance_of_ahead_vehicle, char accident_occ
 		{
 			response = v1.update_lane(_state, 't');
 		}
-		return response;
 		_state = a1.State_Changes(_state);
 	}
 	if (_state == State::driving_normal)
